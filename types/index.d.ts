@@ -17,12 +17,17 @@ interface Interview {
   id: string;
   role: string;
   level: string;
-  questions: string[];
+  questions: string[]; // Changed from questions[]
   techstack: string[];
   createdAt: string;
   userId: string;
   type: string;
   finalized: boolean;
+}
+
+interface SavedMessage {
+  role: 'user' | 'system' | 'assistant';
+  content: string;
 }
 
 interface CreateFeedbackParams {
@@ -39,7 +44,7 @@ interface User {
 }
 
 interface InterviewCardProps {
-  interviewId?: string;
+  id?: string;
   userId?: string;
   role: string;
   type: string;
@@ -53,9 +58,8 @@ interface AgentProps {
   interviewId?: string;
   feedbackId?: string;
   type: "generate" | "interview";
-  questions?: string[];
+  questions?: SavedMessage[]; // Changed from questions?
 }
-
 interface RouteParams {
   params: Promise<Record<string, string>>;
   searchParams: Promise<Record<string, string>>;
