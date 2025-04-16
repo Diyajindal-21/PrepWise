@@ -45,9 +45,48 @@ const Agent = ({
     };
 
     const onMessage = (message: Message) => {
+      console.log("Message received:", message);
+      
       if (message.type === "transcript" && message.transcriptType === "final") {
         const newMessage = { role: message.role, content: message.transcript };
         setMessages((prev) => [...prev, newMessage]);
+      }
+      
+      // Handle function calls from VAPI
+      if (message.type === "function-call") {
+        console.log("Function call received:", message.functionCall);
+        
+        // Handle saveInterview function call
+        if (message.functionCall.name === "saveInterview") {
+          handleSaveInterview(message.functionCall.parameters as any);
+        }
+      }
+    };
+
+    const handleSaveInterview = async (parameters: any) => {
+      console.log("Saving interview with parameters:", parameters);
+      try {
+        const response = await fetch("/api/vapi/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...parameters,
+            userid: userId,
+          }),
+        });
+        
+        const data = await response.json();
+        console.log("Save interview response:", data);
+        
+        if (data.success && data.interviewId) {
+          console.log("Interview saved successfully with ID:", data.interviewId);
+        } else {
+          console.error("Failed to save interview:", data.error);
+        }
+      } catch (error) {
+        console.error("Error saving interview:", error);
       }
     };
 
@@ -80,7 +119,7 @@ const Agent = ({
       vapi.off("speech-end", onSpeechEnd);
       vapi.off("error", onError);
     };
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     if (messages.length > 0) {
