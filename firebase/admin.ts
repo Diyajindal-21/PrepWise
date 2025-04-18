@@ -5,18 +5,18 @@ import { getFirestore as getFireStore } from "firebase-admin/firestore";
 const initFirebaseAdmin = () => {
     try {
         console.log("Initializing Firebase Admin");
-        console.log("Project ID:", process.env.project_id);
-        console.log("Client Email:", process.env.client_email);
-        console.log("Private Key length:", process.env.private_key?.length);
+        console.log("Project ID:", process.env.PROJECT_ID);
+        console.log("Client Email:", process.env.CLIENT_EMAIL);
+        console.log("Private Key length:", process.env.PRIVATE_KEY?.length);
 
         const apps = getApps();
         if (!apps.length) {
             console.log("No apps found, initializing new app");
             initializeApp({
                 credential: cert({
-                    projectId: process.env.project_id,
-                    clientEmail: process.env.client_email,
-                    privateKey: process.env.private_key?.replace(/\\n/g, "\n")
+                    projectId: process.env.PROJECT_ID,
+                    clientEmail: process.env.CLIENT_EMAIL,
+                    privateKey: process.env.PRIVATE_KEY?.replace(/\\n/g, "\n")
                 })
             });
             console.log("Firebase Admin SDK initialized successfully");
