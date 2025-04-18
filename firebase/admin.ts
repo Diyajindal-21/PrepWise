@@ -1,26 +1,41 @@
-import { initializeApp, getApps, cert } from "firebase-admin/app";
+import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-import { getFirestore } from "firebase-admin/firestore";
+import { getFirestore as getFireStore } from "firebase-admin/firestore";
 
-// Initialize Firebase Admin SDK
-function initFirebaseAdmin() {
-  const apps = getApps();
+const initFirebaseAdmin = () => {
+    try {
+        console.log("Initializing Firebase Admin");
+        console.log("Project ID:", process.env.PROJECT_ID);
+        console.log("Client Email:", process.env.CLIENT_EMAIL);
+        console.log("Private Key length:", process.env.PRIVATE_KEY?.length);
 
-  if (!apps.length) {
-    initializeApp({
-      credential: cert({
-        projectId: process.env.PROJECT_ID,
-        clientEmail: process.env.CLIENT_EMAIL,
-        // Replace newlines in the private key
-        privateKey: process.env.PRIVATE_KEY?.replace(/\\n/g, "\n"),
-      }),
-    });
-  }
+        const apps = getApps();
+        if (!apps.length) {
+            console.log("No apps found, initializing new app");
+            initializeApp({
+                credential: cert({
+                    projectId: process.env.PROJECT_ID,
+                    clientEmail: process.env.CLIENT_EMAIL,
+                    privateKey: process.env.PRIVATE_KEY?.replace(/\\n/g, "\n")
+                })
+            });
+            console.log("Firebase Admin SDK initialized successfully");
+        } else {
+            console.log("Apps already initialized:", apps.length);
+        }
 
-  return {
-    auth: getAuth(),
-    db: getFirestore(),
-  };
-}
+        const auth = getAuth();
+        const db = getFireStore();
+        console.log("Auth and Firestore services initialized");
+
+        return {
+            auth,
+            db
+        };
+    } catch (error) {
+        console.error("Error initializing Firebase Admin:", error);
+        throw error;
+    }
+};
 
 export const { auth, db } = initFirebaseAdmin();

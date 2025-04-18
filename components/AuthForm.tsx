@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import {Form} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { toast } from "sonner"
 import FormField from "@/components/FormField"
@@ -13,7 +12,6 @@ import { useRouter } from "next/navigation"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "@/firebase/client"
 import { signIn, signup } from "@/lib/actions/auth.action"
-
 
 const authformschema=(type:FormType)=>{
     return z.object({
@@ -73,13 +71,13 @@ const AuthForm=({type}:{type:FormType})=>{
             router.push('/');
         }
     }catch(error){
-        console.log(error);
-        toast.error(`There was an error: ${error}`)
+        console.error("Auth error:", error);
+        toast.error(`Authentication failed: ${error}`);
     }
   } 
   const isSignin=type==='sign-in';
     return(
-        <div className="card-border lg:min-w-[566px]">
+        <div className="card-border">
             <div className="flex flex-col gap-6 card py-14 px-10">
                 <div className="flex flex-row gap-2 justify-center">
                     <Image src="/logo.svg" alt="logo" height={32} width={38}></Image>
@@ -98,8 +96,8 @@ const AuthForm=({type}:{type:FormType})=>{
     </Form>
     <p className="text-center">
         {isSignin?"Don't have an account yet?":"Already have an account?"}
-        <Link href={!isSignin?'/sign-in':'sign-up'} className="font-bold text-user-primary ml-1">
-        {!isSignin?'Sign In':'Sign Up'}
+        <Link href={isSignin?'/sign-up':'sign-in'} className="font-bold text-user-primary ml-1">
+        {isSignin?'Sign Up':'Sign In'}
         </Link>
     </p>
     </div>

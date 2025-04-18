@@ -1,8 +1,9 @@
 import AuthForm from "@/components/AuthForm"
 
-const SignUp=()=>{
+export default function SignUp() {
     return (
-        <AuthForm type="sign-up"></AuthForm>
+        <div className="flex items-center justify-center min-h-screen">
+            <AuthForm type="sign-up" />
+        </div>
     )
 }
-export default SignUp;
