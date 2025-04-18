@@ -34,18 +34,29 @@ export async function signUp(params: SignUpParams) {
         message: "User already exists. Please sign in.",
       };
 
-    // save user to db
-    await db.collection("users").doc(uid).set({
-      name,
-      email,
-      // profileURL,
-      // resumeURL,
-    });
-
-    return {
-      success: true,
-      message: "Account created successfully. Please sign in.",
-    };
+    // save user to db with better error handling
+    try {
+      await db.collection("users").doc(uid).set({
+        name,
+        email,
+        createdAt: new Date(),
+        // profileURL,
+        // resumeURL,
+      });
+      
+      console.log("User successfully saved to Firestore:", uid);
+      
+      return {
+        success: true,
+        message: "Account created successfully. Please sign in.",
+      };
+    } catch (firestoreError) {
+      console.error("Error saving user to Firestore:", firestoreError);
+      return {
+        success: false,
+        message: "Failed to save user data. Please try again.",
+      };
+    }
   } catch (error: any) {
     console.error("Error creating user:", error);
 
