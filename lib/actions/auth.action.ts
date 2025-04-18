@@ -28,21 +28,28 @@ export async function signUp(params: SignUpParams) {
   try {
     // check if user exists in db
     const userRecord = await db.collection("users").doc(uid).get();
-    if (userRecord.exists)
+    if (userRecord.exists) {
+      console.log("User already exists in Firestore:", uid);
       return {
         success: false,
         message: "User already exists. Please sign in.",
       };
+    }
 
     // save user to db with better error handling
     try {
-      await db.collection("users").doc(uid).set({
+      console.log("Attempting to save user to Firestore:", uid);
+      
+      const userData = {
         name,
         email,
         createdAt: new Date(),
-        // profileURL,
-        // resumeURL,
-      });
+        // Add any other fields you want to store
+      };
+      
+      console.log("User data to be saved:", userData);
+      
+      await db.collection("users").doc(uid).set(userData);
       
       console.log("User successfully saved to Firestore:", uid);
       
@@ -52,13 +59,20 @@ export async function signUp(params: SignUpParams) {
       };
     } catch (firestoreError) {
       console.error("Error saving user to Firestore:", firestoreError);
+      
+      // Log more details about the error
+      if (firestoreError instanceof Error) {
+        console.error("Error message:", firestoreError.message);
+        console.error("Error stack:", firestoreError.stack);
+      }
+      
       return {
         success: false,
         message: "Failed to save user data. Please try again.",
       };
     }
   } catch (error: any) {
-    console.error("Error creating user:", error);
+    console.error("Error in sign-up process:", error);
 
     // Handle Firebase specific errors
     if (error.code === "auth/email-already-exists") {
